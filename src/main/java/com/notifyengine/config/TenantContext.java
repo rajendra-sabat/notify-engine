@@ -1,20 +1,20 @@
 package com.notifyengine.config;
 
-public class TenantContext {
+public final class TenantContext {
 
-    private static final ThreadLocal<String> currentTenant = new ThreadLocal<>();
+    private static final ThreadLocal<String> CURRENT_TENANT = new ThreadLocal<>();
 
     private TenantContext() {}
 
-    public static void setTenant(String schema) {
-        currentTenant.set(schema);
+    public static void setTenant(String tenant) {
+        CURRENT_TENANT.set(tenant);
     }
 
     public static String getTenant() {
-        return currentTenant.get();
+        return CURRENT_TENANT.get();
     }
 
     public static void clear() {
-        currentTenant.remove();
+        CURRENT_TENANT.remove();
     }
 }
