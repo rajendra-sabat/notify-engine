@@ -1,5 +1,6 @@
-package com.notifyengine.notification.channel;
+package com.notifyengine.service;
 
+import com.notifyengine.domain.ChannelType;
 import com.notifyengine.domain.Notification;
 
 public interface NotificationChannel {

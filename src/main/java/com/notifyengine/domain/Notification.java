@@ -1,6 +1,6 @@
 package com.notifyengine.domain;
 
-import com.notifyengine.notification.channel.ChannelType;
+import com.notifyengine.domain.ChannelType;
 import io.hypersistence.utils.hibernate.type.json.JsonType;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.*;
@@ -41,9 +41,17 @@ public class Notification {
     @Schema(description = "Display name of the recipient", example = "Jane Doe")
     private String recipientName;
 
+    @Column(name = "subject", length = 255)
+    @Schema(description = "Email subject line", example = "Your verification code")
+    private String subject;
+
+    @Column(name = "body", nullable = false, columnDefinition = "text")
+    @Schema(description = "Notification body text", example = "Your one-time password is 123456")
+    private String body;
+
     @Type(JsonType.class)
     @Column(name = "template_variables", columnDefinition = "jsonb")
-    @Schema(description = "Template variable substitutions", example = "{\"otp\": \"123456\"}")
+    @Schema(description = "Key-value pairs for dynamic substitution", example = "{\"otp\": \"123456\"}")
     private Map<String, String> templateVariables;
 
     @Column(name = "status", nullable = false, length = 20)
@@ -63,13 +71,16 @@ public class Notification {
     }
 
     public Notification(UUID id, ChannelType type, String recipientEmail, String recipientPhone,
-                        String recipientName, Map<String, String> templateVariables,
+                        String recipientName, String subject, String body,
+                        Map<String, String> templateVariables,
                         NotificationStatus status, OffsetDateTime createdAt, OffsetDateTime updatedAt) {
         this.id = id;
         this.type = type;
         this.recipientEmail = recipientEmail;
         this.recipientPhone = recipientPhone;
         this.recipientName = recipientName;
+        this.subject = subject;
+        this.body = body;
         this.templateVariables = templateVariables;
         this.status = status;
         this.createdAt = createdAt;

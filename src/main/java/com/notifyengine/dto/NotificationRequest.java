@@ -10,13 +10,12 @@ import java.util.Map;
 @Schema(description = "Payload for creating a new notification")
 public record NotificationRequest(
         @NotBlank
-        @Schema(description = "Notification channel type", example = "EMAIL", allowableValues = {"EMAIL", "SMS", "PUSH"})
+        @Schema(description = "Notification channel type", example = "EMAIL", allowableValues = {"EMAIL", "SMS"})
         String type,
 
         @Email
         @Schema(description = "Recipient email address (required when type is EMAIL)", example = "user@example.com")
         String recipientEmail,
-
 
         @Schema(description = "Recipient phone number in E.164 format (required when type is SMS)", example = "+32499123456")
         String recipientPhone,
@@ -25,7 +24,14 @@ public record NotificationRequest(
         @Schema(description = "Display name of the recipient", example = "Jane Doe")
         String recipientName,
 
-        @Schema(description = "Key-value pairs injected into the notification template", example = "{\"otp\": \"123456\"}")
+        @Schema(description = "Email subject line (required for EMAIL type)", example = "Your verification code")
+        String subject,
+
+        @NotBlank
+        @Schema(description = "Notification body text", example = "Your one-time password is 123456")
+        String body,
+
+        @Schema(description = "Key-value pairs for dynamic substitution", example = "{\"otp\": \"123456\"}")
         Map<String, String> templateVariables
 ) {
 }

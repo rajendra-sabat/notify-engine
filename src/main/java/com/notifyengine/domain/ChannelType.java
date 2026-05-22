@@ -1,4 +1,4 @@
-package com.notifyengine.notification.channel;
+package com.notifyengine.domain;
 
 public enum ChannelType {
     EMAIL,

@@ -3,13 +3,15 @@ package com.notifyengine.service;
 import com.notifyengine.domain.Notification;
 import com.notifyengine.domain.NotificationStatus;
 import com.notifyengine.dto.NotificationRequest;
-import com.notifyengine.notification.channel.ChannelType;
-import com.notifyengine.notification.channel.NotificationChannel;
+import com.notifyengine.domain.ChannelType;
+import com.notifyengine.service.NotificationChannel;
 import com.notifyengine.repository.NotificationRepository;
 import org.jspecify.annotations.NonNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.time.OffsetDateTime;
 import java.util.List;
@@ -31,10 +33,12 @@ public class NotificationService {
         OffsetDateTime now = OffsetDateTime.now();
         Notification notification = new Notification(
                 null,
-                ChannelType.valueOf(request.type()),
+                parseChannelType(request.type()),
                 request.recipientEmail(),
                 request.recipientPhone(),
                 request.recipientName(),
+                request.subject(),
+                request.body(),
                 request.templateVariables(),
                 NotificationStatus.PENDING,
                 now,
@@ -44,16 +48,15 @@ public class NotificationService {
     }
 
     private @NonNull Notification sendNotification(Notification notification) {
-
-        NotificationChannel channel = getNotificationChannel(notification);
+        Notification saved = notificationRepository.save(notification);
         try {
-            channel.send(notification);
-            notification.updateStatus(NotificationStatus.SENT);
+            getNotificationChannel(saved).send(saved);
+            saved.updateStatus(NotificationStatus.SENT);
         } catch (Exception e) {
-            notification.updateStatus(NotificationStatus.FAILED);
-            log.error("error caught {}", notification.getId(), e);
+            saved.updateStatus(NotificationStatus.FAILED);
+            log.error("Failed to dispatch notification id={} type={}", saved.getId(), saved.getType(), e);
         }
-        return notificationRepository.save(notification);
+        return notificationRepository.save(saved);
     }
 
     private @NonNull NotificationChannel getNotificationChannel(Notification notification) {
@@ -61,5 +64,13 @@ public class NotificationService {
                 .filter(c -> c.supports(notification.getType()))
                 .findFirst()
                 .orElseThrow(() -> new IllegalStateException("No channel found for type: " + notification.getType()));
+    }
+
+    private ChannelType parseChannelType(String type) {
+        try {
+            return ChannelType.valueOf(type);
+        } catch (IllegalArgumentException e) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid channel type: " + type);
+        }
     }
 }

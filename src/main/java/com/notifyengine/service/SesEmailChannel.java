@@ -1,5 +1,6 @@
-package com.notifyengine.notification.channel;
+package com.notifyengine.service;
 
+import com.notifyengine.domain.ChannelType;
 import com.notifyengine.domain.Notification;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,17 +28,17 @@ public class SesEmailChannel implements NotificationChannel {
 
     @Override
     public void send(Notification notification) {
-        String to = notification.getRecipientEmail();
+        String subject = notification.getSubject() != null ? notification.getSubject() : "";
 
         sesClient.sendEmail(SendEmailRequest.builder()
                 .source(fromEmail)
                 .destination(Destination.builder()
-                        .toAddresses(to)
+                        .toAddresses(notification.getRecipientEmail())
                         .build())
                 .message(Message.builder()
-                        .subject(Content.builder().data("Test notification").build())
+                        .subject(Content.builder().data(subject).build())
                         .body(Body.builder()
-                                .text(Content.builder().data("This is a test.").build())
+                                .text(Content.builder().data(notification.getBody()).build())
                                 .build())
                         .build())
                 .build());

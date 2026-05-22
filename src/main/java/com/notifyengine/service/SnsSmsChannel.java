@@ -1,19 +1,15 @@
-package com.notifyengine.notification.channel;
+package com.notifyengine.service;
 
+import com.notifyengine.domain.ChannelType;
 import com.notifyengine.domain.Notification;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 @Service
 public class SnsSmsChannel implements NotificationChannel {
 
-    private static final Logger log = LoggerFactory.getLogger(SnsSmsChannel.class);
-
     @Override
     public void send(Notification notification) {
-        String to = notification.getRecipientPhone();
-        log.info("Sending via SNS");
+        throw new UnsupportedOperationException("SNS channel not yet implemented");
     }
 
     @Override
