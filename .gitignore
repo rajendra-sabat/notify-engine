@@ -1,7 +1,5 @@
 # Project-specific
-CLAUDE.md
 AGENT.md
-.claude/
 .env
 .DS_Store
 

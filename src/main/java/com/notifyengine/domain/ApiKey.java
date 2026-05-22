@@ -1,6 +1,7 @@
 package com.notifyengine.domain;
 
 import jakarta.persistence.*;
+
 import java.time.OffsetDateTime;
 import java.util.Objects;
 import java.util.UUID;
@@ -48,35 +49,26 @@ public class ApiKey {
 
     public UUID getId() { return id; }
     public void setId(UUID id) { this.id = id; }
-
     public Tenant getTenant() { return tenant; }
     public void setTenant(Tenant tenant) { this.tenant = tenant; }
-
     public String getKeyHash() { return keyHash; }
     public void setKeyHash(String keyHash) { this.keyHash = keyHash; }
-
     public String getKeyPrefix() { return keyPrefix; }
     public void setKeyPrefix(String keyPrefix) { this.keyPrefix = keyPrefix; }
-
     public boolean isActive() { return active; }
     public void setActive(boolean active) { this.active = active; }
-
     public OffsetDateTime getCreatedAt() { return createdAt; }
     public void setCreatedAt(OffsetDateTime createdAt) { this.createdAt = createdAt; }
-
     public OffsetDateTime getExpiresAt() { return expiresAt; }
     public void setExpiresAt(OffsetDateTime expiresAt) { this.expiresAt = expiresAt; }
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof ApiKey)) return false;
-        ApiKey other = (ApiKey) o;
+        if (!(o instanceof ApiKey other)) return false;
         return Objects.equals(id, other.id);
     }
 
     @Override
-    public int hashCode() {
-        return Objects.hashCode(id);
-    }
+    public int hashCode() { return Objects.hashCode(id); }
 }

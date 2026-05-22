@@ -1,7 +1,9 @@
 package com.notifyengine.domain;
 
 import io.hypersistence.utils.hibernate.type.json.JsonType;
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.*;
+import lombok.Getter;
 import org.hibernate.annotations.Type;
 
 import java.time.OffsetDateTime;
@@ -9,38 +11,49 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
 
+@Schema(description = "Persisted notification record")
 @Entity
 @Table(name = "notifications")
+@Getter
 public class Notification {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "id", updatable = false, nullable = false)
+    @Schema(description = "Unique notification ID", example = "3fa85f64-5717-4562-b3fc-2c963f66afa6", accessMode = Schema.AccessMode.READ_ONLY)
     private UUID id;
 
     @Column(name = "type", nullable = false, length = 10)
+    @Schema(description = "Notification channel type", example = "EMAIL")
     private String type;
 
     @Column(name = "recipient_email", length = 255)
+    @Schema(description = "Recipient email address", example = "user@example.com")
     private String recipientEmail;
 
     @Column(name = "recipient_phone", length = 50)
+    @Schema(description = "Recipient phone number", example = "+32499123456")
     private String recipientPhone;
 
     @Column(name = "recipient_name", length = 255)
+    @Schema(description = "Display name of the recipient", example = "Jane Doe")
     private String recipientName;
 
     @Type(JsonType.class)
     @Column(name = "template_variables", columnDefinition = "jsonb")
+    @Schema(description = "Template variable substitutions", example = "{\"otp\": \"123456\"}")
     private Map<String, String> templateVariables;
 
     @Column(name = "status", nullable = false, length = 20)
+    @Schema(description = "Processing status", example = "PENDING", allowableValues = {"PENDING", "SENT", "FAILED"}, accessMode = Schema.AccessMode.READ_ONLY)
     private String status = "PENDING";
 
     @Column(name = "created_at", nullable = false, updatable = false)
+    @Schema(description = "Creation timestamp", accessMode = Schema.AccessMode.READ_ONLY)
     private OffsetDateTime createdAt;
 
     @Column(name = "updated_at", nullable = false)
+    @Schema(description = "Last update timestamp", accessMode = Schema.AccessMode.READ_ONLY)
     private OffsetDateTime updatedAt;
 
     @PreUpdate
@@ -64,33 +77,6 @@ public class Notification {
         this.updatedAt = updatedAt;
     }
 
-    public UUID getId() { return id; }
-    public void setId(UUID id) { this.id = id; }
-
-    public String getType() { return type; }
-    public void setType(String type) { this.type = type; }
-
-    public String getRecipientEmail() { return recipientEmail; }
-    public void setRecipientEmail(String recipientEmail) { this.recipientEmail = recipientEmail; }
-
-    public String getRecipientPhone() { return recipientPhone; }
-    public void setRecipientPhone(String recipientPhone) { this.recipientPhone = recipientPhone; }
-
-    public String getRecipientName() { return recipientName; }
-    public void setRecipientName(String recipientName) { this.recipientName = recipientName; }
-
-    public Map<String, String> getTemplateVariables() { return templateVariables; }
-    public void setTemplateVariables(Map<String, String> templateVariables) { this.templateVariables = templateVariables; }
-
-    public String getStatus() { return status; }
-    public void setStatus(String status) { this.status = status; }
-
-    public OffsetDateTime getCreatedAt() { return createdAt; }
-    public void setCreatedAt(OffsetDateTime createdAt) { this.createdAt = createdAt; }
-
-    public OffsetDateTime getUpdatedAt() { return updatedAt; }
-    public void setUpdatedAt(OffsetDateTime updatedAt) { this.updatedAt = updatedAt; }
-
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -99,7 +85,5 @@ public class Notification {
     }
 
     @Override
-    public int hashCode() {
-        return Objects.hashCode(id);
-    }
+    public int hashCode() { return Objects.hashCode(id); }
 }

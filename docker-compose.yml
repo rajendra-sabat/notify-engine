@@ -7,9 +7,27 @@ services:
       POSTGRES_USER: notifyengine
       POSTGRES_PASSWORD: notifyengine
     ports:
-      - "5432:5432"
+      - "5431:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U notifyengine"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  app:
+    build: .
+    container_name: notify-engine-app
+    ports:
+      - "8080:8080"
+    environment:
+      DB_URL: jdbc:postgresql://postgres:5432/notifyengine
+      DB_USERNAME: notifyengine
+      DB_PASSWORD: notifyengine
+    depends_on:
+      postgres:
+        condition: service_healthy
 
 volumes:
   postgres_data:
