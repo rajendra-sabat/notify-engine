@@ -1,5 +1,6 @@
 package com.notifyengine.domain;
 
+import com.notifyengine.notification.channel.ChannelType;
 import io.hypersistence.utils.hibernate.type.json.JsonType;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.*;
@@ -24,8 +25,9 @@ public class Notification {
     private UUID id;
 
     @Column(name = "type", nullable = false, length = 10)
+    @Enumerated(EnumType.STRING)
     @Schema(description = "Notification channel type", example = "EMAIL")
-    private String type;
+    private ChannelType type;
 
     @Column(name = "recipient_email", length = 255)
     @Schema(description = "Recipient email address", example = "user@example.com")
@@ -45,8 +47,9 @@ public class Notification {
     private Map<String, String> templateVariables;
 
     @Column(name = "status", nullable = false, length = 20)
+    @Enumerated(EnumType.STRING)
     @Schema(description = "Processing status", example = "PENDING", allowableValues = {"PENDING", "SENT", "FAILED"}, accessMode = Schema.AccessMode.READ_ONLY)
-    private String status = "PENDING";
+    private NotificationStatus status = NotificationStatus.PENDING;
 
     @Column(name = "created_at", nullable = false, updatable = false)
     @Schema(description = "Creation timestamp", accessMode = Schema.AccessMode.READ_ONLY)
@@ -56,16 +59,12 @@ public class Notification {
     @Schema(description = "Last update timestamp", accessMode = Schema.AccessMode.READ_ONLY)
     private OffsetDateTime updatedAt;
 
-    @PreUpdate
-    void onPreUpdate() {
-        this.updatedAt = OffsetDateTime.now();
+    public Notification() {
     }
 
-    public Notification() {}
-
-    public Notification(UUID id, String type, String recipientEmail, String recipientPhone,
+    public Notification(UUID id, ChannelType type, String recipientEmail, String recipientPhone,
                         String recipientName, Map<String, String> templateVariables,
-                        String status, OffsetDateTime createdAt, OffsetDateTime updatedAt) {
+                        NotificationStatus status, OffsetDateTime createdAt, OffsetDateTime updatedAt) {
         this.id = id;
         this.type = type;
         this.recipientEmail = recipientEmail;
@@ -77,6 +76,11 @@ public class Notification {
         this.updatedAt = updatedAt;
     }
 
+    @PreUpdate
+    void onPreUpdate() {
+        this.updatedAt = OffsetDateTime.now();
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -85,5 +89,11 @@ public class Notification {
     }
 
     @Override
-    public int hashCode() { return Objects.hashCode(id); }
+    public int hashCode() {
+        return Objects.hashCode(id);
+    }
+
+    public void updateStatus(NotificationStatus status) {
+        this.status = status;
+    }
 }

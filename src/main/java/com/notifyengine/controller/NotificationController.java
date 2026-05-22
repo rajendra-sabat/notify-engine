@@ -11,7 +11,10 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.net.URI;
 
@@ -27,22 +30,22 @@ public class NotificationController {
     }
 
     @Operation(
-        summary = "Create a notification",
-        description = "Creates a new notification in the caller's tenant schema. The tenant is resolved from the `X-API-Key` header.",
-        responses = {
-            @ApiResponse(
-                responseCode = "201",
-                description = "Notification created",
-                headers = @Header(name = "Location", description = "URL of the created notification", schema = @Schema(type = "string")),
-                content = @Content(schema = @Schema(implementation = Notification.class))
-            ),
-            @ApiResponse(responseCode = "400", description = "Validation error", content = @Content),
-            @ApiResponse(responseCode = "401", description = "Missing or invalid API key", content = @Content)
-        }
+            summary = "Create a notification",
+            description = "Creates a new notification in the caller's tenant schema. The tenant is resolved from the `X-API-Key` header.",
+            responses = {
+                    @ApiResponse(
+                            responseCode = "201",
+                            description = "Notification created",
+                            headers = @Header(name = "Location", description = "URL of the created notification", schema = @Schema(type = "string")),
+                            content = @Content(schema = @Schema(implementation = Notification.class))
+                    ),
+                    @ApiResponse(responseCode = "400", description = "Validation error", content = @Content),
+                    @ApiResponse(responseCode = "401", description = "Missing or invalid API key", content = @Content)
+            }
     )
     @PostMapping
     public ResponseEntity<Notification> create(@Valid @RequestBody NotificationRequest request) {
-        Notification created = notificationService.createNotification(request);
+        Notification created = notificationService.createAndSendNotification(request);
         return ResponseEntity
                 .created(URI.create("/api/v1/notifications/" + created.getId()))
                 .body(created);

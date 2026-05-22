@@ -17,7 +17,7 @@ public record NotificationRequest(
         @Schema(description = "Recipient email address (required when type is EMAIL)", example = "user@example.com")
         String recipientEmail,
 
-        @NotNull
+
         @Schema(description = "Recipient phone number in E.164 format (required when type is SMS)", example = "+32499123456")
         String recipientPhone,
 
@@ -27,4 +27,5 @@ public record NotificationRequest(
 
         @Schema(description = "Key-value pairs injected into the notification template", example = "{\"otp\": \"123456\"}")
         Map<String, String> templateVariables
-) {}
+) {
+}
