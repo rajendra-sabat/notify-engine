@@ -7,7 +7,7 @@ services:
       POSTGRES_USER: notifyengine
       POSTGRES_PASSWORD: notifyengine
     ports:
-      - "5431:5432"
+      - "${DB_PORT:-5432}:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
     healthcheck:
@@ -23,8 +23,8 @@ services:
       - "8080:8080"
     environment:
       DB_URL: jdbc:postgresql://postgres:5432/notifyengine
-      DB_USERNAME: notifyengine
-      DB_PASSWORD: notifyengine
+      DB_USERNAME: ${DB_USERNAME:-notifyengine}
+      DB_PASSWORD: ${DB_PASSWORD:-notifyengine}
     depends_on:
       postgres:
         condition: service_healthy
