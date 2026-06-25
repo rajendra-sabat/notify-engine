@@ -12,6 +12,7 @@ import software.amazon.awssdk.services.ses.model.Content;
 import software.amazon.awssdk.services.ses.model.Destination;
 import software.amazon.awssdk.services.ses.model.Message;
 import software.amazon.awssdk.services.ses.model.SendEmailRequest;
+import software.amazon.awssdk.services.ses.model.SesException;
 
 @Service
 public class SesEmailChannel implements NotificationChannel {
@@ -29,21 +30,25 @@ public class SesEmailChannel implements NotificationChannel {
     @Override
     public void send(Notification notification) {
         String subject = notification.getSubject() != null ? notification.getSubject() : "";
-
-        sesClient.sendEmail(SendEmailRequest.builder()
-                .source(fromEmail)
-                .destination(Destination.builder()
-                        .toAddresses(notification.getRecipientEmail())
-                        .build())
-                .message(Message.builder()
-                        .subject(Content.builder().data(subject).build())
-                        .body(Body.builder()
-                                .text(Content.builder().data(notification.getBody()).build())
-                                .build())
-                        .build())
-                .build());
-
-        log.info("Sent via SES, notificationId={}", notification.getId());
+        try {
+            sesClient.sendEmail(SendEmailRequest.builder()
+                    .source(fromEmail)
+                    .destination(Destination.builder()
+                            .toAddresses(notification.getRecipientEmail())
+                            .build())
+                    .message(Message.builder()
+                            .subject(Content.builder().data(subject).build())
+                            .body(Body.builder()
+                                    .text(Content.builder().data(notification.getBody()).build())
+                                    .build())
+                            .build())
+                    .build());
+            log.info("Sent via SES, notificationId={}", notification.getId());
+        } catch (SesException e) {
+            log.error("SES rejected email notificationId={} errorCode={} requestId={}",
+                    notification.getId(), e.awsErrorDetails().errorCode(), e.requestId());
+            throw e;
+        }
     }
 
     @Override

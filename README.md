@@ -1,6 +1,6 @@
 # NotifyEngine
 
-A multi-tenant notification engine for delivering Email and SMS at scale.
+A multi-tenant notification engine for delivering Email notifications at scale.
 
 **Status:** In Development
 
@@ -8,7 +8,7 @@ A multi-tenant notification engine for delivering Email and SMS at scale.
 
 ## What it does
 
-NotifyEngine is a backend service that lets multiple tenants send Email and SMS notifications through a single API. Each tenant is isolated at the database level. The service is designed for machine-to-machine use — a server calls the API with an API key and NotifyEngine handles delivery via AWS SES and AWS SNS.
+NotifyEngine is a backend service that lets multiple tenants send Email notifications through a single API. Each tenant is isolated at the database level. The service is designed for machine-to-machine use — a server calls the API with an API key and NotifyEngine handles delivery via AWS SES.
 
 ---
 
@@ -35,6 +35,8 @@ curl -X POST http://localhost:8080/api/v1/notifications \
     "type": "EMAIL",
     "recipientEmail": "user@example.com",
     "recipientName": "John Doe",
+    "subject": "Hello from NotifyEngine",
+    "body": "This is a test notification.",
     "templateVariables": { "brandName": "Acme Corp" }
   }'
 ```
