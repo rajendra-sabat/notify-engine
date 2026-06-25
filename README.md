@@ -2,7 +2,7 @@
 
 A multi-tenant notification engine for delivering Email notifications at scale.
 
-**Status:** In Development
+**Status:** MVP Shipped
 
 ---
 
