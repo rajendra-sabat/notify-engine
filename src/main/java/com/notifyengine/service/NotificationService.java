@@ -55,6 +55,8 @@ public class NotificationService {
         } catch (Exception e) {
             saved.updateStatus(NotificationStatus.FAILED);
             log.error("Failed to dispatch notification id={} type={}", saved.getId(), saved.getType(), e);
+            notificationRepository.save(saved);
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Notification dispatch failed");
         }
         return notificationRepository.save(saved);
     }

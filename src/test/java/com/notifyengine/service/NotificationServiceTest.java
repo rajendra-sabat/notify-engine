@@ -72,30 +72,33 @@ class NotificationServiceTest {
 
 
     @Test
-    void emailNotification_channelThrows_returnsFailed() {
+    void emailNotification_channelThrows_throwsInternalServerError() {
         doThrow(new RuntimeException("SES unavailable")).when(emailChannel).send(any());
 
-        Notification result = service.createAndSendNotification(emailRequest());
+        ResponseStatusException ex = assertThrows(ResponseStatusException.class,
+                () -> service.createAndSendNotification(emailRequest()));
 
-        assertThat(result.getStatus()).isEqualTo(NotificationStatus.FAILED);
+        assertThat(ex.getStatusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
     @Test
-    void emailNotification_channelThrows_stillSavesTwice() {
+    void emailNotification_channelThrows_savesFailedBeforeThrowing() {
         doThrow(new RuntimeException("SES unavailable")).when(emailChannel).send(any());
 
-        service.createAndSendNotification(emailRequest());
+        assertThrows(ResponseStatusException.class,
+                () -> service.createAndSendNotification(emailRequest()));
 
         verify(notificationRepository, times(2)).save(any(Notification.class));
     }
 
     @Test
-    void notification_noChannelForType_returnsFailed() {
+    void notification_noChannelForType_throwsInternalServerError() {
         service = new NotificationService(notificationRepository, List.of());
 
-        Notification result = service.createAndSendNotification(emailRequest());
+        ResponseStatusException ex = assertThrows(ResponseStatusException.class,
+                () -> service.createAndSendNotification(emailRequest()));
 
-        assertThat(result.getStatus()).isEqualTo(NotificationStatus.FAILED);
+        assertThat(ex.getStatusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
     @Test
